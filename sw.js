@@ -1,5 +1,5 @@
 // Bump this version whenever you change any file, so devices pick up the update.
-const CACHE = "obb-detector-v1";
+const CACHE = "obb-detector-v2";
 const FILES = [
   "./",
   "./index.html",
