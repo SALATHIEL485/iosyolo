@@ -1,7 +1,7 @@
 // ====== EDIT THESE ======
 const MODEL_URL = "./my_model.onnx";
 const INPUT_SIZE = 640;                       // must match the imgsz used for export
-const CLASSES = ["class0", "class1"];         // same order as classes.txt
+const CLASSES = ["duck"];         // same order as classes.txt
 // ========================
 
 const IOU_THRESHOLD = 0.45;
