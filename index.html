@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Detector">
+<meta name="theme-color" content="#f2f2f7">
+<title>OBB Detector</title>
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
+<style>
+  :root {
+    --bg: #f2f2f7;
+    --card: #ffffff;
+    --text: #000000;
+    --muted: #6c6c70;
+    --line: #d1d1d6;
+    --blue: #007aff;
+    --red: #ff3b30;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #000000;
+      --card: #1c1c1e;
+      --text: #ffffff;
+      --muted: #98989f;
+      --line: #38383a;
+      --blue: #0a84ff;
+      --red: #ff453a;
+    }
+  }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin: 0; background: var(--bg); color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Arial, sans-serif; }
+  body { padding: env(safe-area-inset-top, 0px) env(safe-area-inset-right, 0px) env(safe-area-inset-bottom, 0px) env(safe-area-inset-left, 0px); }
+  main { max-width: 720px; margin: 0 auto; padding: 8px 16px 40px; }
+  h1 { font-size: 34px; font-weight: 700; letter-spacing: 0.37px; margin: 12px 0 14px; }
+  .card { background: var(--card); border-radius: 14px; overflow: hidden; }
+  .view { position: relative; background: #000; aspect-ratio: 4 / 3; display: flex; align-items: center; justify-content: center; }
+  canvas { width: 100%; height: 100%; object-fit: contain; display: block; }
+  video { display: none; }
+  .placeholder { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+    color: #8e8e93; font-size: 15px; text-align: center; padding: 24px; }
+  .badge { position: absolute; top: 10px; left: 10px; background: rgba(0,0,0,.55); color: #fff;
+    font-size: 13px; padding: 4px 10px; border-radius: 12px; font-variant-numeric: tabular-nums; }
+  .row { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 16px; min-height: 44px; }
+  .row + .row { border-top: 0.5px solid var(--line); }
+  .row small { color: var(--muted); }
+  .buttons { display: flex; gap: 10px; margin: 14px 0; }
+  button, .filebtn { flex: 1; font: inherit; font-size: 17px; font-weight: 600; border: 0; border-radius: 12px;
+    padding: 14px 16px; background: var(--blue); color: #fff; text-align: center; cursor: pointer; }
+  button.stop { background: var(--red); }
+  .filebtn { background: var(--card); color: var(--blue); }
+  button:disabled { opacity: .45; }
+  button:active, .filebtn:active { opacity: .7; }
+  .filebtn input { display: none; }
+  h2 { font-size: 13px; font-weight: 400; color: var(--muted); text-transform: uppercase; letter-spacing: -0.08px; margin: 22px 16px 6px; }
+  input[type=range] { width: 52%; accent-color: var(--blue); }
+  .dot { width: 12px; height: 12px; border-radius: 50%; display: inline-block; margin-right: 10px; flex: none; }
+  .name { display: flex; align-items: center; }
+  .empty { color: var(--muted); padding: 14px 16px; font-size: 15px; }
+  #status { color: var(--muted); font-size: 13px; margin: 8px 16px 0; min-height: 18px; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Detector</h1>
+
+  <div class="card view">
+    <div class="placeholder" id="placeholder">Tap Start camera or choose a photo.</div>
+    <canvas id="canvas" width="640" height="480"></canvas>
+    <span class="badge" id="badge" hidden></span>
+  </div>
+  <video id="video" playsinline muted></video>
+  <div id="status">Loading model…</div>
+
+  <div class="buttons">
+    <button id="camBtn" disabled>Start camera</button>
+    <label class="filebtn">Choose photo
+      <input type="file" id="photo" accept="image/*">
+    </label>
+  </div>
+
+  <h2>Settings</h2>
+  <div class="card">
+    <div class="row">
+      <span>Confidence</span>
+      <input type="range" id="conf" min="0.1" max="0.9" step="0.05" value="0.35">
+      <small id="confVal">0.35</small>
+    </div>
+  </div>
+
+  <h2>Detections</h2>
+  <div class="card" id="list"><div class="empty">Nothing detected yet.</div></div>
+</main>
+
+<script src="ort.min.js"></script>
+<script src="app.js"></script>
+<script>
+  if ("serviceWorker" in navigator) {
+    navigator.serviceWorker.register("./sw.js").catch(() => {});
+  }
+</script>
+</body>
+</html>
